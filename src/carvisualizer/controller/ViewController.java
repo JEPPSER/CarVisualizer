@@ -23,8 +23,11 @@ public class ViewController implements CarVisualizerController {
 	@FXML private HBox root;
 	
 	private GraphicsContext g;
+	private ArrayList<Car> cars;
 	
 	@FXML public void initialize() {
+		File file = new File("res/cars.csv");
+		cars = readCSVFile(file);
 		g = canvas.getGraphicsContext2D();
 		g.setFill(Color.RED);
 		draw();
@@ -47,7 +50,12 @@ public class ViewController implements CarVisualizerController {
 	
 	private void draw() {
 		g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-		g.fillRect(50, 50, canvas.getWidth() - 100, canvas.getHeight() - 100);
+		for (int i = 0; i < cars.size(); i++) {
+			g.setFill(cars.get(i).shapeColor);
+			if (cars.get(i).arr[21] != null && cars.get(i).arr[25] != null) {
+				g.fillOval((int) cars.get(i).arr[21], (int) cars.get(i).arr[25] / 100, 7, 7);
+			}
+		}
 	}
 	
 	private ArrayList<Car> readCSVFile(File file) {

@@ -4,89 +4,107 @@ import javafx.scene.paint.Color;
 
 public class Car {
 	
-	int riskFactor;
-	int normalizedLosses;
-	String make;
-	String fuelType;
-	String aspiration;
-	String numOfDoors;
-	String bodyStyle;
-	String driveWheels;
-	String engineLocation;
-	double wheelBase;
-	double length;
-	double width;
-	double height;
-	int curbWeight;
-	String engineType;
-	String numOfCylinders;
-	int engineSize;
-	String fuelSystem;
-	double bore;
-	double stroke;
-	int compressionRatio;
-	int horsePower;
-	int peakRpm;
-	int cityMpg;
-	int highwayMpg;
-	int price;
-	
-	double shapeSize;
-	Color shapeColor;
-	String shape;
-	
+	/*
+	 * 0: riskFactor
+	 * 1: normalizedLosses
+	 * 2: make
+	 * 3: fuelType
+	 * 4: aspiration
+	 * 5: numOfDoors
+	 * 6: bodyStyle
+	 * 7: driveWheels
+	 * 8: engineLocation
+	 * 9: wheelBase
+	 * 10: length
+	 * 11: width
+	 * 12: height
+	 * 13: curbWeight
+	 * 14: engineType
+	 * 15: numOfCylinders
+	 * 16: engineSize
+	 * 17: fuelSystem
+	 * 18: bore
+	 * 19: stroke
+	 * 20: compressionRatio
+	 * 21: horsePower
+	 * 22: peakRpm
+	 * 23: cityMpg
+	 * 24: highwayMpg
+	 * 25: price
+	 */
+
+	public double shapeSize;
+	public Color shapeColor;
+	public String shape;
+	public Object[] arr = new Object[26];
+
 	public Car(String[] values) {
-		riskFactor = Integer.parseInt(values[0]);
-		normalizedLosses = Integer.parseInt(values[1]);
-		make = values[2];
-		fuelType = values[3];
-		aspiration = values[4];
-		numOfDoors = values[5];
-		bodyStyle = values[6];
-		driveWheels = values[7];
-		engineLocation = values[8];
-		wheelBase = Double.parseDouble(values[9]);
-		length = Double.parseDouble(values[10]);
-		width = Double.parseDouble(values[11]);
-		height = Double.parseDouble(values[12]);
-		curbWeight = Integer.parseInt(values[13]);
-		engineType = values[14];
-		numOfCylinders = values[15];
-		engineSize = Integer.parseInt(values[16]);
-		fuelSystem = values[17];
-		bore = Double.parseDouble(values[18]);
-		stroke = Double.parseDouble(values[19]);
-		compressionRatio = Integer.parseInt(values[20]);
-		horsePower = Integer.parseInt(values[21]);
-		peakRpm = Integer.parseInt(values[22]);
-		cityMpg = Integer.parseInt(values[23]);
-		highwayMpg = Integer.parseInt(values[24]);
-		price = Integer.parseInt(values[25]);
-		
+		for (int i = 0; i < arr.length; i++) {
+			if (values[i] == null) {
+				arr[i] = null;
+			} else {
+				if (isInteger(values[i])) {
+					arr[i] = Integer.parseInt(values[i]);
+				} else if (isDouble(values[i])) {
+					arr[i] = Double.parseDouble(values[i]);
+				} else {
+					arr[i] = values[i];
+				}
+			}
+		}
+
 		// Set shape
-		if (fuelType == "gas") {
+		if (arr[3] == "gas") {
 			shape = "rectangle";
-		} else if (fuelType == "diesel") {
+		} else if (arr[3] == "diesel") {
 			shape = "circle";
 		}
-		
-		shapeSize = curbWeight / 100;
-		if (riskFactor == -3) {
-			shapeColor = new Color(0, 255, 0, 0.8);
-		} else if (riskFactor == -2) {
-			shapeColor = new Color(85, 255, 0, 0.8);
-		} else if (riskFactor == -1) {
-			shapeColor = new Color(190, 255, 0, 0.8);
-		} else if (riskFactor == 0) {
-			shapeColor = new Color(255, 255, 0, 0.8);
-		} else if (riskFactor == 1) {
-			shapeColor = new Color(255, 190, 0, 0.8);
-		} else if (riskFactor == 2) {
-			shapeColor = new Color(255, 85, 0, 0.8);
-		} else if (riskFactor == 3) {
-			shapeColor = new Color(255, 0, 0, 0.8);
+
+		shapeSize = (int) arr[13] / 100;
+		if ((int) arr[0] == -3) {
+			shapeColor = new Color(0, 1, 0, 0.8);
+		} else if ((int) arr[0] == -2) {
+			shapeColor = new Color(0.33, 1, 0, 0.8);
+		} else if ((int) arr[0] == -1) {
+			shapeColor = new Color(0.75, 1, 0, 0.8);
+		} else if ((int) arr[0] == 0) {
+			shapeColor = new Color(1, 1, 0, 0.8);
+		} else if ((int) arr[0] == 1) {
+			shapeColor = new Color(1, 0.75, 0, 0.8);
+		} else if ((int) arr[0] == 2) {
+			shapeColor = new Color(1, 0.33, 0, 0.8);
+		} else if ((int) arr[0] == 3) {
+			shapeColor = new Color(1, 0, 0, 0.8);
 		} else {
 			shapeColor = new Color(0, 0, 0, 0.8);
 		}
+	}
+	
+	private boolean isInteger(String value) {
+		for (int i = 0; i < value.length(); i++) {
+			if (!(i == 0 && value.charAt(i) == '-')) {
+				if (!Character.isDigit(value.charAt(i))) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	private boolean isDouble(String value) {
+		int pointCounter = 0;
+		for (int i = 0; i < value.length(); i++) {
+			if (!(i == 0 && value.charAt(i) == '-')) {
+				if (value.charAt(i) == '.') {
+					pointCounter++;
+				} else if (!Character.isDigit(value.charAt(i))) {
+					return false;
+				}
+			}	
+		}
+		if (pointCounter != 1) {
+			return false;
+		}	
+		return true;
 	}
 }
