@@ -43,7 +43,7 @@ public class StageManager {
 		mainStage.setScene(mainScene);
 		mainStage.show();
 		
-		getViewController().changeSizeListener();
+		getViewController().inputListeners();
 	}
 	
 	private Parent loadLayout(String layout) throws IOException {

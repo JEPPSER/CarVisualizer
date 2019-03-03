@@ -17,17 +17,6 @@ public class ScatterPlot {
 	}
 
 	public void draw(Canvas canvas, GraphicsContext g, PlotSettings settings) {
-		drawAxes(canvas, g, settings);
-		// drawEntries(canvas, g, settings);
-	}
-
-	private void drawEntries(Canvas canvas, GraphicsContext g, PlotSettings settings) {
-		for (int i = 0; i < cars.size(); i++) {
-
-		}
-	}
-
-	private void drawAxes(Canvas canvas, GraphicsContext g, PlotSettings settings) {
 		// Calculating values for x and y axis
 		double xMin = (double) cars.get(0).arr[settings.xAxisAttribute];
 		double yMin = (double) cars.get(0).arr[settings.yAxisAttribute];
@@ -52,8 +41,8 @@ public class ScatterPlot {
 			}
 		}
 
-		double xDif = xMax - xMin;
-		double yDif = yMax - yMin;
+		double xDif = (xMax - xMin);
+		double yDif = (yMax - yMin);
 		int xTicks = getSignificantDigit(xDif);
 		double xIt = 1.0;
 		if (xTicks < 5) {
@@ -75,25 +64,30 @@ public class ScatterPlot {
 		double yLog = Math.floor(Math.log10(yDif));
 		double yIteration = Math.pow(10, yLog);
 		yIteration *= yIt;
-		double yStart = Math.floor(yMin / yIteration) * yIteration;
+		double yScale = yTickSpacing / yIteration;
+		double yStart = Math.floor(yMin / yIteration)
+				* yIteration;
 
 		// Values for the x axis
 		double xTickSpacing = (canvas.getWidth() - PADDING * 2) / xTicks;
 		double xLog = Math.floor(Math.log10(xDif));
 		double xIteration = Math.pow(10, xLog);
 		xIteration *= xIt;
-		double xStart = Math.floor(xMin / xIteration) * xIteration;
+		double xScale = xTickSpacing / xIteration;
+		double xStart = Math.floor(xMin / xIteration)
+				* xIteration;
 
+		g.scale(settings.scale, settings.scale);
 		// Drawing the y axis
 		for (int i = 0; i < yTicks + 1; i++) {
-			double x1 = PADDING - 5;
-			double x2 = PADDING + 5;
-			double y = (canvas.getHeight() - PADDING) - yTickSpacing * i;
+			double x1 = PADDING - 5 - settings.x;
+			double x2 = PADDING + 5 - settings.x;
+			double y = (canvas.getHeight() - PADDING) - yTickSpacing * i + settings.y;
 
 			// Grid line
 			g.setLineWidth(1);
 			g.setStroke(Color.GAINSBORO);
-			g.strokeLine(PADDING, y, canvas.getWidth() - PADDING, y);
+			g.strokeLine(PADDING - settings.x, y, canvas.getWidth() - PADDING - settings.x, y);
 
 			// Tick
 			g.setLineWidth(2);
@@ -108,14 +102,14 @@ public class ScatterPlot {
 
 		// Drawing the x axis
 		for (int i = 0; i < xTicks + 1; i++) {
-			double y1 = canvas.getHeight() - PADDING - 5;
-			double y2 = canvas.getHeight() - PADDING + 5;
-			double x = PADDING + xTickSpacing * i;
+			double y1 = canvas.getHeight() - PADDING - 5 + settings.y;
+			double y2 = canvas.getHeight() - PADDING + 5 + settings.y;
+			double x = PADDING + xTickSpacing * i - settings.x;
 
 			// Grid line
 			g.setLineWidth(1);
 			g.setStroke(Color.GAINSBORO);
-			g.strokeLine(x, PADDING, x, canvas.getHeight() - PADDING);
+			g.strokeLine(x, PADDING + settings.y, x, canvas.getHeight() - PADDING + settings.y);
 
 			// Tick
 			g.setLineWidth(2);
@@ -130,29 +124,28 @@ public class ScatterPlot {
 
 		g.setStroke(Color.BLACK);
 		g.setLineWidth(2);
-		g.strokeLine(PADDING, PADDING, PADDING, canvas.getHeight() - PADDING);
-		g.strokeLine(PADDING, canvas.getHeight() - PADDING, canvas.getWidth() - PADDING, canvas.getHeight() - PADDING);
-		
-		double xScale = xTickSpacing / xIteration;
-		double yScale = yTickSpacing / yIteration;
+		g.strokeLine(PADDING - settings.x, PADDING + settings.y, PADDING - settings.x,
+				canvas.getHeight() - PADDING + settings.y);
+		g.strokeLine(PADDING - settings.x, canvas.getHeight() - PADDING + settings.y,
+				canvas.getWidth() - PADDING - settings.x, canvas.getHeight() - PADDING + settings.y);
 
 		// Draw all entries
 		for (int i = 0; i < cars.size(); i++) {
 			if (cars.get(i).arr[settings.xAxisAttribute] != null && cars.get(i).arr[settings.yAxisAttribute] != null) {
-				Color c = cars.get(i).shapeColor;
-				//c = new Color(c.getRed(), c.getGreen(), c.getBlue(), 0.7);
-	
 				// Converting entry's x and y to canvas x and y.
 				double x = PADDING + xScale * (double) cars.get(i).arr[settings.xAxisAttribute] - xScale * xStart;
-				double y = canvas.getHeight() - PADDING - (double) cars.get(i).arr[settings.yAxisAttribute] * yScale + yScale * yStart;
-				g.setFill(c);
-				g.fillOval(x - 5, y - 5, 10, 10);
+				double y = canvas.getHeight() - PADDING - (double) cars.get(i).arr[settings.yAxisAttribute] * yScale
+						+ yScale * yStart;
+				g.setFill(cars.get(i).shapeColor);
+				g.fillOval(x - 5 / settings.scale - settings.x, y - 5 / settings.scale + settings.y, 10 / settings.scale, 10 / settings.scale);
 			}
 		}
 		g.setFill(Color.BLACK);
 
-		g.fillText("y", PADDING / 2, PADDING / 2);
-		g.fillText("x", canvas.getWidth() - PADDING / 2, canvas.getHeight() - PADDING / 2);
+		g.fillText("y", PADDING / 2 - settings.x, PADDING / 2 + settings.y);
+		g.fillText("x", canvas.getWidth() - PADDING / 2 - settings.x, canvas.getHeight() - PADDING / 2 + settings.y);
+
+		g.scale(1 / settings.scale, 1 / settings.scale);
 	}
 
 	private int getSignificantDigit(double number) {
