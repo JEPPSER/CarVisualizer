@@ -44,7 +44,7 @@ public class Car {
 				arr[i] = null;
 			} else {
 				if (isInteger(values[i])) {
-					arr[i] = Integer.parseInt(values[i]);
+					arr[i] = Double.parseDouble(values[i]);
 				} else if (isDouble(values[i])) {
 					arr[i] = Double.parseDouble(values[i]);
 				} else {
@@ -60,20 +60,20 @@ public class Car {
 			shape = "circle";
 		}
 
-		shapeSize = (int) arr[13] / 100;
-		if ((int) arr[0] == -3) {
+		shapeSize = (double) arr[13] / 100;
+		if ((double) arr[0] == -3) {
 			shapeColor = new Color(0, 1, 0, 0.8);
-		} else if ((int) arr[0] == -2) {
+		} else if ((double) arr[0] == -2) {
 			shapeColor = new Color(0.33, 1, 0, 0.8);
-		} else if ((int) arr[0] == -1) {
+		} else if ((double) arr[0] == -1) {
 			shapeColor = new Color(0.75, 1, 0, 0.8);
-		} else if ((int) arr[0] == 0) {
+		} else if ((double) arr[0] == 0) {
 			shapeColor = new Color(1, 1, 0, 0.8);
-		} else if ((int) arr[0] == 1) {
+		} else if ((double) arr[0] == 1) {
 			shapeColor = new Color(1, 0.75, 0, 0.8);
-		} else if ((int) arr[0] == 2) {
+		} else if ((double) arr[0] == 2) {
 			shapeColor = new Color(1, 0.33, 0, 0.8);
-		} else if ((int) arr[0] == 3) {
+		} else if ((double) arr[0] == 3) {
 			shapeColor = new Color(1, 0, 0, 0.8);
 		} else {
 			shapeColor = new Color(0, 0, 0, 0.8);

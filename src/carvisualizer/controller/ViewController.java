@@ -7,13 +7,14 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 import carvisualizer.entities.Car;
+import carvisualizer.entities.PlotSettings;
+import carvisualizer.entities.ScatterPlot;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class ViewController implements CarVisualizerController {
@@ -24,12 +25,17 @@ public class ViewController implements CarVisualizerController {
 	
 	private GraphicsContext g;
 	private ArrayList<Car> cars;
+	private PlotSettings settings;
+	private ScatterPlot plot;
 	
 	@FXML public void initialize() {
 		File file = new File("res/cars.csv");
 		cars = readCSVFile(file);
+		settings = new PlotSettings();
+		settings.xAxisAttribute = 21;
+		settings.yAxisAttribute = 25;
+		plot = new ScatterPlot(cars);
 		g = canvas.getGraphicsContext2D();
-		g.setFill(Color.RED);
 		draw();
 	}
 	
@@ -50,12 +56,7 @@ public class ViewController implements CarVisualizerController {
 	
 	private void draw() {
 		g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-		for (int i = 0; i < cars.size(); i++) {
-			g.setFill(cars.get(i).shapeColor);
-			if (cars.get(i).arr[21] != null && cars.get(i).arr[25] != null) {
-				g.fillOval((int) cars.get(i).arr[21], (int) cars.get(i).arr[25] / 100, 7, 7);
-			}
-		}
+		plot.draw(canvas, g, settings);
 	}
 	
 	private ArrayList<Car> readCSVFile(File file) {
