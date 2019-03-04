@@ -21,8 +21,15 @@ public class Axis {
 
 	public Axis(ArrayList<Car> cars, double length, Orientation orientation, int attribute) {
 		this.orientation = orientation;
-		double min = (double) cars.get(0).arr[attribute];
-		double max = (double) cars.get(0).arr[attribute];
+		double max = 0;
+		double min = 0;
+		for (int i = 0; i < cars.size(); i++) {
+			if (cars.get(i).arr[attribute] != null) {
+				max = (double) cars.get(i).arr[attribute];
+				min = (double) cars.get(i).arr[attribute];
+				break;
+			}
+		}
 		for (int i = 1; i < cars.size(); i++) {
 			if (cars.get(i).arr[attribute] != null) {
 				if ((double) cars.get(i).arr[attribute] < min) {

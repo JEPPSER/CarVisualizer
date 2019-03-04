@@ -44,9 +44,9 @@ public class ScatterPlot {
 		}
 
 		g.setFill(Color.BLACK);
-		g.fillText(String.valueOf(settings.xAxisAttribute), PADDING / 2 - settings.x, PADDING / 2 + settings.y);
-		g.fillText(String.valueOf(settings.yAxisAttribute), canvas.getWidth() - PADDING / 2 - settings.x,
-				canvas.getHeight() - PADDING / 2 + settings.y);
+		g.fillText(Car.NAMES[settings.yAxisAttribute], PADDING / 2 - settings.x, PADDING / 2 + settings.y);
+		g.fillText(Car.NAMES[settings.xAxisAttribute], canvas.getWidth() - PADDING * 2 - settings.x,
+				canvas.getHeight() - PADDING / 4 + settings.y);
 
 		g.scale(1 / settings.scale, 1 / settings.scale);
 	}

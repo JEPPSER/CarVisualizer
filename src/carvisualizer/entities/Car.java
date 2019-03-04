@@ -37,6 +37,9 @@ public class Car {
 	public Color shapeColor;
 	public String shape;
 	public Object[] arr = new Object[26];
+	public static final String[] NAMES = { "Risk factor", "Normalized losses", "Make", "Fuel type", "Aspiration", "Number of doors", "Body style",
+			"Drive wheels", "Engine location", "Wheel base", "Length", "Width", "Height", "Curb weight", "Engine type", "Number of cylinders",
+			"Engine size", "Fuel system", "Bore", "Stroke", "Compression ratio", "Horsepower", "Peak rpm", "City mpg", "Highway mpg", "Price"};
 
 	public Car(String[] values) {
 		for (int i = 0; i < arr.length; i++) {

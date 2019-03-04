@@ -20,6 +20,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TitledPane;
@@ -41,6 +43,10 @@ public class ViewController implements CarVisualizerController {
 	private ScrollPane filterScrollPane;
 	@FXML
 	private VBox filterVBox;
+	@FXML
+	private MenuButton xAxisMenu;
+	@FXML
+	private MenuButton yAxisMenu;
 
 	private GraphicsContext g;
 	private ArrayList<Car> cars;
@@ -67,7 +73,27 @@ public class ViewController implements CarVisualizerController {
 		plot = new ScatterPlot(cars);
 		g = canvas.getGraphicsContext2D();
 		initFilters();
+		initAxesMenus();
 		draw();
+	}
+	
+	private void initAxesMenus() {
+		int[] axisAttributes = { 0, 1, 9, 10, 11, 12, 13, 16, 18, 19, 20, 21, 22, 23, 24, 25 };
+		for (int i = 0; i < axisAttributes.length; i++) {
+			final int index = i;
+			MenuItem miX = new MenuItem(Car.NAMES[axisAttributes[i]]);
+			MenuItem miY = new MenuItem(Car.NAMES[axisAttributes[i]]);
+			xAxisMenu.getItems().add(miX);
+			yAxisMenu.getItems().add(miY);
+			miX.setOnAction(e -> {
+				settings.xAxisAttribute = axisAttributes[index];
+				draw();
+			});
+			miY.setOnAction(e -> {
+				settings.yAxisAttribute = axisAttributes[index];
+				draw();
+			});
+		}	
 	}
 	
 	private void initFilters() {
@@ -197,7 +223,7 @@ public class ViewController implements CarVisualizerController {
 			draw();
 		});
 
-		scene.addEventFilter(ScrollEvent.ANY, new EventHandler<ScrollEvent>() {
+		canvas.addEventFilter(ScrollEvent.ANY, new EventHandler<ScrollEvent>() {
 			@Override
 			public void handle(ScrollEvent event) {
 				if (event.getDeltaY() > 0) {
@@ -235,6 +261,8 @@ public class ViewController implements CarVisualizerController {
 		canvas.setOnMouseReleased(e -> {
 			isMouseDown = false;
 		});
+		
+		// TODO: Implement setting x and y axis attributes
 	}
 
 	private void draw() {

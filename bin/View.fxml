@@ -29,8 +29,25 @@
             </Tab>
             <Tab text="Interaction">
                <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #FFFFFF; -fx-border-color: #BBBBBB; -fx-border-width: 1;" />
                </content>
+            </Tab>
+            <Tab text="Axes">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #FFFFFF; -fx-border-width: 1; -fx-border-color: #BBBBBB;">
+                     <children>
+                        <VBox prefHeight="539.0" prefWidth="200.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <MenuButton mnemonicParsing="false" text="x-axis attribute" fx:id="xAxisMenu" />
+                              <MenuButton fx:id="yAxisMenu" mnemonicParsing="false" text="y-axis attribute" />
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </VBox>
+                     </children>
+                  </AnchorPane>
+              </content>
             </Tab>
          </tabs>
       </TabPane>
