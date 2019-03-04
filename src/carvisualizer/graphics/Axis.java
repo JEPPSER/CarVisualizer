@@ -103,9 +103,9 @@ public class Axis {
 			g.setStroke(Color.BLACK);
 			g.strokeLine(x1, y, x2, y);
 			if (iteration < 1) {
-				g.fillText(String.valueOf(start + i * iteration), x1 - 30, y + 5);
+				g.fillText(String.valueOf(start + i * iteration), x1 - 40, y + 5);
 			} else {
-				g.fillText(String.valueOf((int) (start + i * iteration)), x1 - 30, y + 5);
+				g.fillText(String.valueOf((int) (start + i * iteration)), x1 - 40, y + 5);
 			}
 		}
 		g.setStroke(Color.BLACK);

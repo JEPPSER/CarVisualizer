@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import org.controlsfx.control.RangeSlider;
 
 import carvisualizer.entities.Car;
+import carvisualizer.entities.CategorySet;
 import carvisualizer.entities.PlotSettings;
 import carvisualizer.entities.Range;
 import carvisualizer.graphics.ScatterPlot;
@@ -17,10 +18,11 @@ import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Slider;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TitledPane;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -69,36 +71,102 @@ public class ViewController implements CarVisualizerController {
 	}
 	
 	private void initFilters() {
-		initRangeFilter("Risk factor", 0, -1, 1, 1);
-		initRangeFilter("Normalized losses", 1, 100, 200, 20);
+		initCategoryFilter("Make", 2);
+		initCategoryFilter("Fuel type", 3);
+		initCategoryFilter("Aspiration", 4);
+		initCategoryFilter("Number of doors", 5);
+		initCategoryFilter("Body style", 6);
+		initCategoryFilter("Drive wheels", 7);
+		initCategoryFilter("Engine location", 8);
+		initCategoryFilter("Engine type", 14);
+		initCategoryFilter("Number of cylinders", 15);
+		initCategoryFilter("Fuel system", 17);
+		initRangeFilter("Risk factor", 0);
+		initRangeFilter("Normalized losses", 1);
+		initRangeFilter("Wheel base", 9);
+		initRangeFilter("Length", 10);
+		initRangeFilter("Width", 11);
+		initRangeFilter("Height", 12);
+		initRangeFilter("Curb weight", 13);
+		initRangeFilter("Engine size", 16);
+		initRangeFilter("Bore", 18);
+		initRangeFilter("Stroke", 19);
+		initRangeFilter("Compression ratio", 20);
+		initRangeFilter("Horsepower", 21);
+		initRangeFilter("Peak rpm", 22);
+		initRangeFilter("City mpg", 23);
+		initRangeFilter("Highway mpg", 24);
+		initRangeFilter("Price", 25);
 	}
 	
-	private void initRangeFilter(String text, int attribute, double low, double high, double tick) {
+	private void initCategoryFilter(String text, int attribute) {
+		CategorySet cs = findCategories(attribute);
+		VBox vbox = new VBox();
+		TitledPane tp = new TitledPane(text, vbox);
+		tp.setExpanded(false);
+		
+		for (int i = 0; i < cs.categories.size(); i++) {
+			CheckBox cb = new CheckBox(cs.categories.get(i));
+			cb.setSelected(true);
+			vbox.getChildren().add(cb);
+			cb.setOnMouseClicked(e -> {
+				CategorySet set = new CategorySet();
+				for (int j = 0; j < vbox.getChildren().size(); j++) {
+					CheckBox checkBox = (CheckBox) vbox.getChildren().get(j);
+					if (checkBox.isSelected()) {
+						set.categories.add(checkBox.getText());
+					}
+				}
+				settings.categories.put(attribute, set);
+				draw();
+			});
+		}
+		
+		filterVBox.getChildren().add(tp);
+	}
+	
+	private void initRangeFilter(String text, int attribute) {
 		Range r = findMinAndMax(attribute);
 		double max = r.high;
 		double min = r.low;
+		double tick = (max - min) / 5;
 		Label label = new Label(text);
-		RangeSlider slider = new RangeSlider(min, max, low, high);
+		RangeSlider slider = new RangeSlider(min, max, min, max);
+		slider.setMinHeight(30);
+		slider.setMaxHeight(30);
 		slider.setMajorTickUnit(tick);
 		slider.setMinorTickCount(0);
 		slider.setShowTickLabels(true);
 		slider.setShowTickMarks(true);
 		slider.setSnapToTicks(true);
 		filterVBox.getChildren().addAll(label, slider);
-		settings.ranges.put(attribute, new Range(low, high));
+		settings.ranges.put(attribute, new Range(min, max));
 		slider.setOnMouseReleased(e -> {
 			settings.ranges.put(attribute, new Range(slider.getLowValue(), slider.getHighValue()));
 			draw();
 		});
 	}
 	
+	private CategorySet findCategories(int attribute) {
+		CategorySet result = new CategorySet();
+		for (int i = 0; i < cars.size(); i++) {
+			if (cars.get(i).arr[attribute] != null) {
+				String str = (String) cars.get(i).arr[attribute];
+				if (!result.categories.contains(str)) {
+					result.categories.add(str);
+				}
+			}
+		}
+		return result;
+	}
+	
 	private Range findMinAndMax(int attribute) {
 		double max = 0;
 		double min = 0;
 		for (int i = 0; i < cars.size(); i++) {
-			if (cars.get(0).arr[attribute] != null) {
-				max = (double) cars.get(0).arr[attribute];
-				min = (double) cars.get(0).arr[attribute];
+			if (cars.get(i).arr[attribute] != null) {
+				max = (double) cars.get(i).arr[attribute];
+				min = (double) cars.get(i).arr[attribute];
 				break;
 			}
 		}

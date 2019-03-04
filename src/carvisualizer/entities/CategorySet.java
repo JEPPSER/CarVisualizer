@@ -4,10 +4,9 @@ import java.util.ArrayList;
 
 public class CategorySet {
 	
-	public ArrayList<String> allCategories;
-	public ArrayList<String> selectedCategories;
+	public ArrayList<String> categories;
 	
 	public CategorySet() {
-		
+		categories = new ArrayList<String>();
 	}
 }

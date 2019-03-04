@@ -53,12 +53,20 @@ public class ScatterPlot {
 
 	private ArrayList<Car> filterCars(PlotSettings settings) {
 		ArrayList<Car> result = new ArrayList<Car>(cars);
-		// Ranges
 		for (int i = 0; i < 26; i++) {
-			if (settings.ranges.containsKey(i)) {
+			if (settings.ranges.containsKey(i)) { // Ranges
 				for (int j = 0; j < result.size(); j++) {
 					if (result.get(j).arr[i] != null) {
 						if (!settings.ranges.get(i).contains((double) result.get(j).arr[i])) {
+							result.remove(j);
+							j--;
+						}
+					}
+				}
+			} else if (settings.categories.containsKey(i)) { // Categories
+				for (int j = 0; j < result.size(); j++) {
+					if (result.get(j).arr[i] != null) {
+						if (!settings.categories.get(i).categories.contains((String) result.get(j).arr[i])) {
 							result.remove(j);
 							j--;
 						}
