@@ -6,17 +6,25 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+import org.controlsfx.control.RangeSlider;
+
 import carvisualizer.entities.Car;
 import carvisualizer.entities.PlotSettings;
-import carvisualizer.entities.ScatterPlot;
+import carvisualizer.entities.Range;
+import carvisualizer.graphics.ScatterPlot;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class ViewController implements CarVisualizerController {
@@ -27,6 +35,10 @@ public class ViewController implements CarVisualizerController {
 	private TabPane tabPane;
 	@FXML
 	private HBox root;
+	@FXML
+	private ScrollPane filterScrollPane;
+	@FXML
+	private VBox filterVBox;
 
 	private GraphicsContext g;
 	private ArrayList<Car> cars;
@@ -36,12 +48,15 @@ public class ViewController implements CarVisualizerController {
 	private double prevX;
 	private double prevY;
 	private boolean isMouseDown = false;
-	private double mouseX;
-	private double mouseY;
 	private final int PADDING = 60;
 
 	@FXML
 	public void initialize() {
+		AnchorPane.setTopAnchor(filterScrollPane, 0.0);
+		AnchorPane.setBottomAnchor(filterScrollPane, 0.0);
+		AnchorPane.setLeftAnchor(filterScrollPane, 0.0);
+		AnchorPane.setRightAnchor(filterScrollPane, 0.0);
+		
 		File file = new File("res/cars.csv");
 		cars = readCSVFile(file);
 		settings = new PlotSettings();
@@ -49,7 +64,55 @@ public class ViewController implements CarVisualizerController {
 		settings.yAxisAttribute = 25;
 		plot = new ScatterPlot(cars);
 		g = canvas.getGraphicsContext2D();
+		initFilters();
 		draw();
+	}
+	
+	private void initFilters() {
+		initRangeFilter("Risk factor", 0, -1, 1, 1);
+		initRangeFilter("Normalized losses", 1, 100, 200, 20);
+	}
+	
+	private void initRangeFilter(String text, int attribute, double low, double high, double tick) {
+		Range r = findMinAndMax(attribute);
+		double max = r.high;
+		double min = r.low;
+		Label label = new Label(text);
+		RangeSlider slider = new RangeSlider(min, max, low, high);
+		slider.setMajorTickUnit(tick);
+		slider.setMinorTickCount(0);
+		slider.setShowTickLabels(true);
+		slider.setShowTickMarks(true);
+		slider.setSnapToTicks(true);
+		filterVBox.getChildren().addAll(label, slider);
+		settings.ranges.put(attribute, new Range(low, high));
+		slider.setOnMouseReleased(e -> {
+			settings.ranges.put(attribute, new Range(slider.getLowValue(), slider.getHighValue()));
+			draw();
+		});
+	}
+	
+	private Range findMinAndMax(int attribute) {
+		double max = 0;
+		double min = 0;
+		for (int i = 0; i < cars.size(); i++) {
+			if (cars.get(0).arr[attribute] != null) {
+				max = (double) cars.get(0).arr[attribute];
+				min = (double) cars.get(0).arr[attribute];
+				break;
+			}
+		}
+		for (int i = 1; i < cars.size(); i++) {
+			if (cars.get(i).arr[attribute] != null) {
+				double val = (double) cars.get(i).arr[attribute];
+				if (val > max) {
+					max = val;
+				} else if (val < min) {
+					min = val;
+				}
+			}
+		}
+		return new Range(min, max);
 	}
 
 	public void inputListeners() {
@@ -87,11 +150,6 @@ public class ViewController implements CarVisualizerController {
 				draw();
 				event.consume();
 			}
-		});
-
-		canvas.setOnMouseMoved(e -> {
-			mouseX = e.getX();
-			mouseY = e.getY();
 		});
 
 		canvas.setOnMouseDragged(e -> {
