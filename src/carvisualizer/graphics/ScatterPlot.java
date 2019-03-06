@@ -8,7 +8,6 @@ import carvisualizer.entities.Point;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 
 public class ScatterPlot {
@@ -16,6 +15,7 @@ public class ScatterPlot {
 	private ArrayList<Car> cars;
 
 	private final int PADDING = 60;
+	private final Color[] COLORS = { Color.BLUE, Color.RED, Color.GREEN, Color.PURPLE, Color.YELLOW, Color.PINK };
 
 	public ScatterPlot(ArrayList<Car> cars) {
 		this.cars = cars;
@@ -43,7 +43,7 @@ public class ScatterPlot {
 				double y = canvas.getHeight() - PADDING - yValue * yAxis.scale + yAxis.scale * yAxis.start;
 				Point p = adjustForFishEye(x, y, settings, g);
 				checkIfCarClicked(p, settings, car);
-				g.setFill(car.shapeColor);
+				adjustForLens(x, y, settings, g, car);
 				g.fillOval(p.x - 5 / settings.scale - settings.x, p.y - 5 / settings.scale + settings.y,
 						10 / settings.scale, 10 / settings.scale);
 			}
@@ -71,7 +71,7 @@ public class ScatterPlot {
 			g.setFill(Color.WHITE);
 			g.fillRect(canvas.getWidth() - 295, 15, 280, canvas.getHeight() - 30);
 			g.setFill(Color.BLACK);
-			g.setFont(new Font("Arial", (canvas.getHeight() - 120) / 26));
+			g.setFont(new Font("Arial", (canvas.getHeight() - 130) / 26));
 			String str = "";
 			for (int i = 0; i < settings.selectedCar.arr.length; i++) {
 				str += Car.NAMES[i] + ": " + settings.selectedCar.arr[i] + "\n";
@@ -85,7 +85,32 @@ public class ScatterPlot {
 		if (settings.pointClicked && p.distanceTo(mousePos) <= 5 / settings.scale) {
 			settings.pointClicked = false;
 			settings.fishEyePlaced = true;
+			settings.lensPlaced = true;
 			settings.selectedCar = car;
+		}
+	}
+	
+	private void adjustForLens(double x, double y, PlotSettings settings, GraphicsContext g, Car car) {
+		if (!settings.isLens) {
+			g.setFill(car.shapeColor);
+			return;
+		}
+		Point carPos = new Point(x, y);
+		Point lensPos = new Point(settings.lensX / settings.scale + settings.x, settings.lensY / settings.scale - settings.y);
+		double lensRadius = 150 / settings.scale;
+		g.setLineWidth(1 / settings.scale);
+		g.strokeOval(lensPos.x - settings.x - lensRadius, lensPos.y + settings.y - lensRadius, lensRadius * 2,
+				lensRadius * 2);
+		if (carPos.distanceTo(lensPos) <= lensRadius) {
+			if (car.arr[settings.lensAttribute] != null) {
+				int colorIndex = settings.lensValues.indexOf(car.arr[settings.lensAttribute]) % COLORS.length;
+				Color color = new Color(COLORS[colorIndex].getRed(), COLORS[colorIndex].getGreen(), COLORS[colorIndex].getBlue(), 0.8);
+				g.setFill(color);	
+			} else {
+				g.setFill(Color.BLACK);
+			}
+		} else {
+			g.setFill(car.shapeColor);
 		}
 	}
 

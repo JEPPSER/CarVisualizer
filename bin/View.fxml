@@ -36,39 +36,20 @@
                            <children>
                               <HBox spacing="5.0">
                                  <children>
-                                    <CheckBox mnemonicParsing="false" text="Lens">
+                                    <CheckBox fx:id="lensCheckBox" mnemonicParsing="false" text="Lens">
                                        <HBox.margin>
                                           <Insets top="3.0" />
                                        </HBox.margin>
                                     </CheckBox>
-                                    <TitledPane animated="false" expanded="false" text="Lens Settings">
+                                    <TitledPane expanded="false" text="Lens Settings">
                                        <content>
                                           <VBox prefWidth="135.0" spacing="5.0">
                                              <children>
-                                                <MenuButton mnemonicParsing="false" text="Attribute">
-                                                  <items>
-                                                    <MenuItem mnemonicParsing="false" text="Number of doors" />
-                                                    <MenuItem mnemonicParsing="false" text="bore" />
-                                                  </items>
-                                                </MenuButton>
-                                                <VBox spacing="5.0">
+                                                <MenuButton fx:id="lensAttribute" mnemonicParsing="false" text="Attribute" />
+                                                <VBox fx:id="lensLegend" spacing="5.0">
                                                    <padding>
                                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                                    </padding>
-                                                   <children>
-                                                      <HBox spacing="5.0">
-                                                         <children>
-                                                            <Circle fill="DODGERBLUE" radius="6.0" stroke="BLACK" strokeType="INSIDE" />
-                                                            <Label text="4 doors" />
-                                                         </children>
-                                                      </HBox>
-                                                      <HBox spacing="5.0">
-                                                         <children>
-                                                            <Circle fill="#ff1f1f" radius="6.0" stroke="BLACK" strokeType="INSIDE" />
-                                                            <Label text="2 doors" />
-                                                         </children>
-                                                      </HBox>
-                                                   </children>
                                                 </VBox>
                                              </children>
                                           </VBox>
@@ -77,11 +58,6 @@
                                  </children>
                               </HBox>
                               <CheckBox fx:id="fishEyeCheckBox" mnemonicParsing="false" text="Fish Eye" />
-                              <ScrollPane hbarPolicy="NEVER" prefHeight="476.0" prefWidth="187.0">
-                                 <content>
-                                    <VBox />
-                                 </content>
-                              </ScrollPane>
                            </children>
                            <padding>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

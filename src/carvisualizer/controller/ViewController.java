@@ -30,6 +30,8 @@ import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 
 public class ViewController implements CarVisualizerController {
@@ -50,6 +52,14 @@ public class ViewController implements CarVisualizerController {
 	private MenuButton yAxisMenu;
 	@FXML
 	private CheckBox fishEyeCheckBox;
+	@FXML
+	private CheckBox lensCheckBox;
+	@FXML
+	private MenuButton lensAttribute;
+	@FXML
+	private VBox lensLegend;
+	
+	private final Color[] COLORS = { Color.BLUE, Color.RED, Color.GREEN, Color.PURPLE, Color.YELLOW, Color.PINK };
 
 	private GraphicsContext g;
 	private ArrayList<Car> cars;
@@ -77,8 +87,49 @@ public class ViewController implements CarVisualizerController {
 		plot = new ScatterPlot(cars);
 		g = canvas.getGraphicsContext2D();
 		initFilters();
+		initLens();
 		initAxesMenus();
 		draw();
+	}
+	
+	private void initLens() {
+		int[] lensAttributes = { 2, 3, 4, 5, 6, 7, 8, 14, 15, 17 };
+		settings.lensAttribute = 3;
+		createLensLegend(3);
+		for (int i = 0; i < lensAttributes.length; i++) {
+			final int index = lensAttributes[i];
+			MenuItem mi = new MenuItem(Car.NAMES[lensAttributes[i]]);
+			lensAttribute.getItems().add(mi);
+			mi.setOnAction(e -> {
+				settings.lensAttribute = index;
+				createLensLegend(index);
+				draw();
+			});
+		}
+	}
+	
+	private void createLensLegend(int attribute) {
+		lensLegend.getChildren().clear();
+		ArrayList<String> values = new ArrayList<String>();
+		for (int i = 0; i < cars.size(); i++) {
+			if (cars.get(i).arr[attribute] != null && !values.contains(cars.get(i).arr[attribute])) {
+				int colorIndex = values.size() % COLORS.length;
+				values.add((String) cars.get(i).arr[attribute]);
+				HBox hbox = new HBox();
+				hbox.setSpacing(5);
+				Circle circle = new Circle(10, 10, 5, COLORS[colorIndex]);
+				Label label = new Label((String) cars.get(i).arr[attribute]);
+				hbox.getChildren().addAll(circle, label);
+				lensLegend.getChildren().add(hbox);
+			}
+		}
+		HBox hbox = new HBox();
+		hbox.setSpacing(5);
+		Circle circle = new Circle(10, 10, 5, Color.BLACK);
+		Label label = new Label("No value");
+		hbox.getChildren().addAll(circle, label);
+		lensLegend.getChildren().add(hbox);
+		settings.lensValues = values;
 	}
 	
 	private void initAxesMenus() {
@@ -257,6 +308,10 @@ public class ViewController implements CarVisualizerController {
 				settings.fishEyeX = e.getX();
 				settings.fishEyeY = e.getY();
 			}
+			if (!settings.lensPlaced) {
+				settings.lensX = e.getX();
+				settings.lensY = e.getY();
+			}
 			draw();
 		});
 
@@ -271,6 +326,10 @@ public class ViewController implements CarVisualizerController {
 			if (!settings.fishEyePlaced) {
 				settings.fishEyeX = e.getX();
 				settings.fishEyeY = e.getY();
+			}
+			if (!settings.lensPlaced) {
+				settings.lensX = e.getX();
+				settings.lensY = e.getY();
 			}
 			settings.mouseX = e.getX();
 			settings.mouseY = e.getY();
@@ -290,6 +349,15 @@ public class ViewController implements CarVisualizerController {
 				if (mousePos.distanceTo(fishEyePos) < 150) {
 					settings.fishEyePlaced = false;
 				}
+			} else if (!settings.lensPlaced && settings.isLens && !isDragging) {
+				settings.lensPlaced = true;
+			} else if (settings.lensPlaced && settings.isLens && !isDragging) {
+				Point mousePos = new Point(e.getX(), e.getY());
+				Point lensPos = new Point(settings.lensX, settings.lensY);
+				settings.pointClicked = true;
+				if (mousePos.distanceTo(lensPos) < 150) {
+					settings.lensPlaced = false;
+				}
 			} else if (!isDragging) {
 				settings.pointClicked = true;
 			}
@@ -298,8 +366,25 @@ public class ViewController implements CarVisualizerController {
 		});
 		
 		fishEyeCheckBox.setOnAction(e -> {
+			if (!fishEyeCheckBox.isSelected()) {
+				lensCheckBox.setDisable(false);
+			} else {
+				lensCheckBox.setDisable(true);
+			}
 			settings.fishEyePlaced = false;
 			settings.isFishEye = fishEyeCheckBox.isSelected();
+			settings.selectedCar = null;
+			draw();
+		});
+		
+		lensCheckBox.setOnAction(e -> {
+			if (!lensCheckBox.isSelected()) {
+				fishEyeCheckBox.setDisable(false);
+			} else {
+				fishEyeCheckBox.setDisable(true);
+			}
+			settings.lensPlaced = false;
+			settings.isLens = lensCheckBox.isSelected();
 			settings.selectedCar = null;
 			draw();
 		});
