@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import carvisualizer.entities.Car;
 import carvisualizer.entities.PlotSettings;
+import carvisualizer.entities.Point;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -37,8 +38,9 @@ public class ScatterPlot {
 				double yValue = (double) car.arr[settings.yAxisAttribute];
 				double x = PADDING + xAxis.scale * xValue - xAxis.scale * xAxis.start;
 				double y = canvas.getHeight() - PADDING - yValue * yAxis.scale + yAxis.scale * yAxis.start;
+				Point p = adjustForFishEye(x, y, settings, g);
 				g.setFill(car.shapeColor);
-				g.fillOval(x - 5 / settings.scale - settings.x, y - 5 / settings.scale + settings.y,
+				g.fillOval(p.x - 5 / settings.scale - settings.x, p.y - 5 / settings.scale + settings.y,
 						10 / settings.scale, 10 / settings.scale);
 			}
 		}
@@ -49,6 +51,27 @@ public class ScatterPlot {
 				canvas.getHeight() - PADDING / 4 + settings.y);
 
 		g.scale(1 / settings.scale, 1 / settings.scale);
+	}
+
+	private Point adjustForFishEye(double x, double y, PlotSettings settings, GraphicsContext g) {
+		if (!settings.isFishEye) {
+			return new Point(x, y);
+		}
+		Point fishEyePos = new Point(settings.fishEyeX / settings.scale + settings.x, settings.fishEyeY / settings.scale - settings.y);
+		Point carPos = new Point(x, y);
+		double newX = x;
+		double newY = y;
+		double dist = fishEyePos.distanceTo(carPos);
+		double lensRadius = 150 / settings.scale;
+		if (dist <= lensRadius) {
+			double angle = fishEyePos.angleTo(carPos);
+			newX = fishEyePos.x + Math.pow(dist, 0.5) * Math.pow(lensRadius, 0.5) * Math.cos(angle);
+			newY = fishEyePos.y + Math.pow(dist, 0.5) * Math.pow(lensRadius, 0.5) * Math.sin(angle);
+		}
+		g.setFill(Color.BLACK);
+		g.setLineWidth(1 / settings.scale);
+		g.strokeOval(fishEyePos.x - settings.x - lensRadius, fishEyePos.y + settings.y - lensRadius, lensRadius * 2, lensRadius * 2);
+		return new Point(newX, newY);
 	}
 
 	private ArrayList<Car> filterCars(PlotSettings settings) {

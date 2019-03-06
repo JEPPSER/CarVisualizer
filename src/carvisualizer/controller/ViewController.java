@@ -11,6 +11,7 @@ import org.controlsfx.control.RangeSlider;
 import carvisualizer.entities.Car;
 import carvisualizer.entities.CategorySet;
 import carvisualizer.entities.PlotSettings;
+import carvisualizer.entities.Point;
 import carvisualizer.entities.Range;
 import carvisualizer.graphics.ScatterPlot;
 import javafx.event.EventHandler;
@@ -47,6 +48,8 @@ public class ViewController implements CarVisualizerController {
 	private MenuButton xAxisMenu;
 	@FXML
 	private MenuButton yAxisMenu;
+	@FXML
+	private CheckBox fishEyeCheckBox;
 
 	private GraphicsContext g;
 	private ArrayList<Car> cars;
@@ -55,6 +58,7 @@ public class ViewController implements CarVisualizerController {
 
 	private double prevX;
 	private double prevY;
+	private boolean isDragging = false;
 	private boolean isMouseDown = false;
 	private final int PADDING = 60;
 
@@ -93,7 +97,7 @@ public class ViewController implements CarVisualizerController {
 				settings.yAxisAttribute = axisAttributes[index];
 				draw();
 			});
-		}	
+		}
 	}
 	
 	private void initFilters() {
@@ -245,13 +249,26 @@ public class ViewController implements CarVisualizerController {
 				event.consume();
 			}
 		});
+		
+		canvas.setOnMouseMoved(e -> {
+			if (!settings.fishEyePlaced) {
+				settings.fishEyeX = e.getX();
+				settings.fishEyeY = e.getY();
+			}
+			draw();
+		});
 
 		canvas.setOnMouseDragged(e -> {
 			if (!isMouseDown) {
 				isMouseDown = true;
 			} else {
+				isDragging = true;
 				settings.x += prevX - e.getX() / settings.scale;
 				settings.y -= prevY - e.getY() / settings.scale;
+			}
+			if (!settings.fishEyePlaced) {
+				settings.fishEyeX = e.getX();
+				settings.fishEyeY = e.getY();
 			}
 			prevX = e.getX() / settings.scale;
 			prevY = e.getY() / settings.scale;
@@ -260,9 +277,23 @@ public class ViewController implements CarVisualizerController {
 
 		canvas.setOnMouseReleased(e -> {
 			isMouseDown = false;
+			if (!settings.fishEyePlaced && settings.isFishEye && !isDragging) {
+				settings.fishEyePlaced = true;
+			} else if (settings.fishEyePlaced && settings.isFishEye && !isDragging) {
+				Point mousePos = new Point(e.getX(), e.getY());
+				Point fishEyePos = new Point(settings.fishEyeX, settings.fishEyeY);
+				if (mousePos.distanceTo(fishEyePos) < 150) {
+					settings.fishEyePlaced = false;
+				}
+			}
+			isDragging = false;
+			draw();
 		});
 		
-		// TODO: Implement setting x and y axis attributes
+		fishEyeCheckBox.setOnAction(e -> {
+			settings.isFishEye = fishEyeCheckBox.isSelected();
+			draw();
+		});
 	}
 
 	private void draw() {

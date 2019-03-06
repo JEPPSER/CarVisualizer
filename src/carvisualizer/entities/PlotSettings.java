@@ -10,6 +10,10 @@ public class PlotSettings {
 	public double x = 0;
 	public double y = 0;
 	public double scale = 1.0;
+	public boolean isFishEye = false;
+	public boolean fishEyePlaced = false;
+	public double fishEyeX;
+	public double fishEyeY;
 	
 	public Map<Integer, Range> ranges = new HashMap<>();
 	public Map<Integer, CategorySet> categories = new HashMap<>();
