@@ -8,6 +8,8 @@ import carvisualizer.entities.Point;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
 
 public class ScatterPlot {
 
@@ -21,6 +23,7 @@ public class ScatterPlot {
 
 	public void draw(Canvas canvas, GraphicsContext g, PlotSettings settings) {
 		g.scale(settings.scale, settings.scale);
+		g.setFont(new Font("Arial", 12));
 
 		// Create both axes and draw them
 		Axis xAxis = new Axis(cars, canvas.getWidth() - PADDING * 2, Orientation.HORIZONTAL, settings.xAxisAttribute);
@@ -39,10 +42,16 @@ public class ScatterPlot {
 				double x = PADDING + xAxis.scale * xValue - xAxis.scale * xAxis.start;
 				double y = canvas.getHeight() - PADDING - yValue * yAxis.scale + yAxis.scale * yAxis.start;
 				Point p = adjustForFishEye(x, y, settings, g);
+				checkIfCarClicked(p, settings, car);
 				g.setFill(car.shapeColor);
 				g.fillOval(p.x - 5 / settings.scale - settings.x, p.y - 5 / settings.scale + settings.y,
 						10 / settings.scale, 10 / settings.scale);
 			}
+		}
+
+		if (settings.pointClicked) {
+			settings.pointClicked = false;
+			settings.selectedCar = null;
 		}
 
 		g.setFill(Color.BLACK);
@@ -51,13 +60,41 @@ public class ScatterPlot {
 				canvas.getHeight() - PADDING / 4 + settings.y);
 
 		g.scale(1 / settings.scale, 1 / settings.scale);
+
+		drawSelectedCar(canvas, g, settings);
+	}
+
+	private void drawSelectedCar(Canvas canvas, GraphicsContext g, PlotSettings settings) {
+		if (settings.selectedCar != null) {
+			g.setFill(Color.BLACK);
+			g.fillRect(canvas.getWidth() - 300, 10, 290, canvas.getHeight() - 20);
+			g.setFill(Color.WHITE);
+			g.fillRect(canvas.getWidth() - 295, 15, 280, canvas.getHeight() - 30);
+			g.setFill(Color.BLACK);
+			g.setFont(new Font("Arial", (canvas.getHeight() - 120) / 26));
+			String str = "";
+			for (int i = 0; i < settings.selectedCar.arr.length; i++) {
+				str += Car.NAMES[i] + ": " + settings.selectedCar.arr[i] + "\n";
+			}
+			g.fillText(str, canvas.getWidth() - 290, 15 + g.getFont().getSize());
+		}
+	}
+
+	private void checkIfCarClicked(Point p, PlotSettings settings, Car car) {
+		Point mousePos = new Point(settings.mouseX / settings.scale + settings.x, settings.mouseY / settings.scale - settings.y);
+		if (settings.pointClicked && p.distanceTo(mousePos) <= 5 / settings.scale) {
+			settings.pointClicked = false;
+			settings.fishEyePlaced = true;
+			settings.selectedCar = car;
+		}
 	}
 
 	private Point adjustForFishEye(double x, double y, PlotSettings settings, GraphicsContext g) {
 		if (!settings.isFishEye) {
 			return new Point(x, y);
 		}
-		Point fishEyePos = new Point(settings.fishEyeX / settings.scale + settings.x, settings.fishEyeY / settings.scale - settings.y);
+		Point fishEyePos = new Point(settings.fishEyeX / settings.scale + settings.x,
+				settings.fishEyeY / settings.scale - settings.y);
 		Point carPos = new Point(x, y);
 		double newX = x;
 		double newY = y;
@@ -70,7 +107,8 @@ public class ScatterPlot {
 		}
 		g.setFill(Color.BLACK);
 		g.setLineWidth(1 / settings.scale);
-		g.strokeOval(fishEyePos.x - settings.x - lensRadius, fishEyePos.y + settings.y - lensRadius, lensRadius * 2, lensRadius * 2);
+		g.strokeOval(fishEyePos.x - settings.x - lensRadius, fishEyePos.y + settings.y - lensRadius, lensRadius * 2,
+				lensRadius * 2);
 		return new Point(newX, newY);
 	}
 

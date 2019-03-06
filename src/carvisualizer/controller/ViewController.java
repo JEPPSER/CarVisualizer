@@ -251,6 +251,8 @@ public class ViewController implements CarVisualizerController {
 		});
 		
 		canvas.setOnMouseMoved(e -> {
+			settings.mouseX = e.getX();
+			settings.mouseY = e.getY();
 			if (!settings.fishEyePlaced) {
 				settings.fishEyeX = e.getX();
 				settings.fishEyeY = e.getY();
@@ -270,6 +272,8 @@ public class ViewController implements CarVisualizerController {
 				settings.fishEyeX = e.getX();
 				settings.fishEyeY = e.getY();
 			}
+			settings.mouseX = e.getX();
+			settings.mouseY = e.getY();
 			prevX = e.getX() / settings.scale;
 			prevY = e.getY() / settings.scale;
 			draw();
@@ -282,16 +286,21 @@ public class ViewController implements CarVisualizerController {
 			} else if (settings.fishEyePlaced && settings.isFishEye && !isDragging) {
 				Point mousePos = new Point(e.getX(), e.getY());
 				Point fishEyePos = new Point(settings.fishEyeX, settings.fishEyeY);
+				settings.pointClicked = true;
 				if (mousePos.distanceTo(fishEyePos) < 150) {
 					settings.fishEyePlaced = false;
 				}
+			} else if (!isDragging) {
+				settings.pointClicked = true;
 			}
 			isDragging = false;
 			draw();
 		});
 		
 		fishEyeCheckBox.setOnAction(e -> {
+			settings.fishEyePlaced = false;
 			settings.isFishEye = fishEyeCheckBox.isSelected();
+			settings.selectedCar = null;
 			draw();
 		});
 	}
