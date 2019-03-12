@@ -33,9 +33,7 @@ public class Car {
 	 * 25: price
 	 */
 
-	public double shapeSize;
 	public Color shapeColor;
-	public String shape;
 	public Object[] arr = new Object[26];
 	public static final String[] NAMES = { "Risk factor", "Normalized losses", "Make", "Fuel type", "Aspiration", "Number of doors", "Body style",
 			"Drive wheels", "Engine location", "Wheel base", "Length", "Width", "Height", "Curb weight", "Engine type", "Number of cylinders",
@@ -56,14 +54,6 @@ public class Car {
 			}
 		}
 
-		// Set shape
-		if (arr[3] == "gas") {
-			shape = "rectangle";
-		} else if (arr[3] == "diesel") {
-			shape = "circle";
-		}
-
-		shapeSize = (double) arr[13] / 100;
 		if ((double) arr[0] == -3) {
 			shapeColor = new Color(0, 1, 0, 0.8);
 		} else if ((double) arr[0] == -2) {

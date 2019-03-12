@@ -58,10 +58,33 @@ public class ScatterPlot {
 		g.fillText(Car.NAMES[settings.yAxisAttribute], PADDING / 2 - settings.x, PADDING / 2 + settings.y);
 		g.fillText(Car.NAMES[settings.xAxisAttribute], canvas.getWidth() - PADDING * 2 - settings.x,
 				canvas.getHeight() - PADDING / 4 + settings.y);
+		drawLegend(canvas, g, settings);
 
 		g.scale(1 / settings.scale, 1 / settings.scale);
 
 		drawSelectedCar(canvas, g, settings);
+	}
+	
+	private void drawLegend(Canvas canvas, GraphicsContext g, PlotSettings settings) {
+		double x = PADDING / 2 - settings.x;
+		double y = canvas.getHeight() - PADDING / 3 + settings.y;
+		g.fillText("Risk-factor:", x, y);
+		g.setFill(new Color(0, 1, 0, 0.8));
+		g.fillOval(x + 70, y - 10, 10, 10);
+		g.setFill(new Color(0.33, 1, 0, 0.8));
+		g.fillOval(x + 87, y - 10, 10, 10);
+		g.setFill(new Color(0.75, 1, 0, 0.8));
+		g.fillOval(x + 104, y - 10, 10, 10);
+		g.setFill(new Color(1, 1, 0, 0.8));
+		g.fillOval(x + 118, y - 10, 10, 10);
+		g.setFill(new Color(1, 0.75, 0, 0.8));
+		g.fillOval(x + 132, y - 10, 10, 10);
+		g.setFill(new Color(1, 0.33, 0, 0.8));
+		g.fillOval(x + 145, y - 10, 10, 10);
+		g.setFill(new Color(1, 0, 0, 0.8));
+		g.fillOval(x + 158, y - 10, 10, 10);
+		g.setFill(Color.BLACK);
+		g.fillText("-3  -2  -1  0  1  2  3", x + 68, y + 10);
 	}
 
 	private void drawSelectedCar(Canvas canvas, GraphicsContext g, PlotSettings settings) {
