@@ -13,6 +13,7 @@ import carvisualizer.entities.CategorySet;
 import carvisualizer.entities.PlotSettings;
 import carvisualizer.entities.Point;
 import carvisualizer.entities.Range;
+import carvisualizer.graphics.PlotMatrix;
 import carvisualizer.graphics.ScatterPlot;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -39,6 +40,10 @@ public class ViewController implements CarVisualizerController {
 	@FXML
 	private Canvas canvas;
 	@FXML
+	private Canvas matrixCanvas;
+	@FXML
+	private CheckBox matrixCheckBox;
+	@FXML
 	private TabPane tabPane;
 	@FXML
 	private HBox root;
@@ -62,9 +67,11 @@ public class ViewController implements CarVisualizerController {
 	private final Color[] COLORS = { Color.BLUE, Color.RED, Color.GREEN, Color.PURPLE, Color.YELLOW, Color.PINK };
 
 	private GraphicsContext g;
+	private GraphicsContext gMatrix;
 	private ArrayList<Car> cars;
 	private PlotSettings settings;
 	private ScatterPlot plot;
+	private PlotMatrix matrix;
 
 	private double prevX;
 	private double prevY;
@@ -85,7 +92,9 @@ public class ViewController implements CarVisualizerController {
 		settings.xAxisAttribute = 21;
 		settings.yAxisAttribute = 25;
 		plot = new ScatterPlot(cars);
+		matrix = new PlotMatrix(cars);
 		g = canvas.getGraphicsContext2D();
+		gMatrix = matrixCanvas.getGraphicsContext2D();
 		initFilters();
 		initLens();
 		initAxesMenus();
@@ -269,12 +278,19 @@ public class ViewController implements CarVisualizerController {
 		Stage stage = (Stage) scene.getWindow();
 
 		stage.widthProperty().addListener((obs, oldVal, newVal) -> {
-			canvas.setWidth(scene.getWidth() - tabPane.getWidth());
+			double canvasWidth = stage.getWidth() - tabPane.getWidth();
+			if (matrixCanvas.isVisible()) {
+				matrixCanvas.setWidth(canvasWidth / 2);
+				canvas.setWidth(canvasWidth / 2);
+			} else {
+				canvas.setWidth(canvasWidth);
+			}
 			draw();
 		});
 
 		stage.heightProperty().addListener((obs, oldVal, newVal) -> {
 			canvas.setHeight(scene.getHeight());
+			matrixCanvas.setHeight(scene.getHeight());
 			draw();
 		});
 
@@ -388,11 +404,26 @@ public class ViewController implements CarVisualizerController {
 			settings.selectedCar = null;
 			draw();
 		});
+		
+		matrixCheckBox.setOnAction(e -> {
+			if (matrixCheckBox.isSelected()) {
+				matrixCanvas.setVisible(true);
+				stage.setWidth(canvas.getWidth() * 2 + tabPane.getWidth());
+				matrixCanvas.setWidth(canvas.getWidth());
+			} else {
+				matrixCanvas.setVisible(false);
+				stage.setWidth(canvas.getWidth() + tabPane.getWidth());
+				matrixCanvas.setWidth(0);
+			}
+			draw();
+		});
 	}
 
 	private void draw() {
 		g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+		gMatrix.clearRect(0, 0, matrixCanvas.getWidth(), matrixCanvas.getHeight());
 		plot.draw(canvas, g, settings);
+		matrix.draw(matrixCanvas, gMatrix, settings);
 	}
 
 	private ArrayList<Car> readCSVFile(File file) {

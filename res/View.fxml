@@ -9,14 +9,15 @@
 
 <HBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="carvisualizer.controller.ViewController">
    <children>
-      <Canvas fx:id="canvas" height="568.0" width="630.0" />
+      <Canvas fx:id="canvas" height="400.0" width="400.0" />
+      <Canvas fx:id="matrixCanvas" height="400.0" width="400.0" />
       <TabPane fx:id="tabPane" maxWidth="200.0" minWidth="200.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #DDDDDD;" tabClosingPolicy="UNAVAILABLE">
          <tabs>
             <Tab text="Filter">
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefWidth="200.0">
                      <children>
-                        <ScrollPane fx:id="filterScrollPane" fitToHeight="true" hbarPolicy="NEVER" prefHeight="538.0" prefWidth="200.0">
+                        <ScrollPane fx:id="filterScrollPane" fitToHeight="true" hbarPolicy="NEVER" prefHeight="538.0" prefWidth="300.0">
                            <content>
                               <VBox fx:id="filterVBox" spacing="5.0">
                                  <padding>
@@ -66,7 +67,7 @@
                      </children></AnchorPane>
                </content>
             </Tab>
-            <Tab text="Axes">
+            <Tab text="Customize">
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" style="-fx-background-color: #FFFFFF; -fx-border-width: 1; -fx-border-color: #BBBBBB;">
                      <children>
@@ -74,6 +75,7 @@
                            <children>
                               <MenuButton mnemonicParsing="false" text="x-axis attribute" fx:id="xAxisMenu" />
                               <MenuButton fx:id="yAxisMenu" mnemonicParsing="false" text="y-axis attribute" />
+                              <CheckBox fx:id="matrixCheckBox" mnemonicParsing="false" selected="true" text="Show plot matrix" />
                            </children>
                            <padding>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

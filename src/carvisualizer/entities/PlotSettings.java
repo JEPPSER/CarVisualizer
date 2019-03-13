@@ -25,6 +25,7 @@ public class PlotSettings {
 	public double lensY;
 	
 	public Car selectedCar;
+	public int[] matrixAttributes = { 25, 21, 13, 22 };
 	
 	public Map<Integer, Range> ranges = new HashMap<>();
 	public Map<Integer, CategorySet> categories = new HashMap<>();

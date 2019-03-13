@@ -17,12 +17,14 @@ public class Axis {
 	public double iteration;
 	public double scale;
 	public double start;
+	public double max;
+	public double min;
 	public int ticks;
 
 	public Axis(ArrayList<Car> cars, double length, Orientation orientation, int attribute) {
 		this.orientation = orientation;
-		double max = 0;
-		double min = 0;
+		max = 0;
+		min = 0;
 		for (int i = 0; i < cars.size(); i++) {
 			if (cars.get(i).arr[attribute] != null) {
 				max = (double) cars.get(i).arr[attribute];
