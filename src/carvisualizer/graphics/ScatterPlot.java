@@ -8,6 +8,7 @@ import carvisualizer.entities.Point;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 
 public class ScatterPlot {
@@ -44,6 +45,9 @@ public class ScatterPlot {
 				Point p = adjustForFishEye(x, y, settings, g);
 				checkIfCarClicked(p, settings, car);
 				adjustForLens(x, y, settings, g, car);
+				if (settings.selectedCars.contains(car)) {
+					g.setFill(Color.BLUE);
+				}
 				g.fillOval(p.x - 5 / settings.scale - settings.x, p.y - 5 / settings.scale + settings.y,
 						10 / settings.scale, 10 / settings.scale);
 			}
@@ -59,10 +63,50 @@ public class ScatterPlot {
 		g.fillText(Car.NAMES[settings.xAxisAttribute], canvas.getWidth() - PADDING * 2 - settings.x,
 				canvas.getHeight() - PADDING / 4 + settings.y);
 		drawLegend(canvas, g, settings);
+		
+		g.setFill(new Color(0, 0, 1, 0.3));
+		if (settings.selectRectangle != null) {
+			Rectangle r = getAdjustedRect(settings);
+			getSelectedCars(r, settings, filteredCars, xAxis, yAxis, canvas);
+			g.fillRect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
+		}
+		g.setFill(Color.BLACK);
 
 		g.scale(1 / settings.scale, 1 / settings.scale);
 
 		drawSelectedCar(canvas, g, settings);
+	}
+	
+	private void getSelectedCars(Rectangle r, PlotSettings settings, ArrayList<Car> filteredCars, Axis xAxis, Axis yAxis, Canvas canvas) {
+		settings.selectedCars.clear();
+		for (int i = 0; i < filteredCars.size(); i++) {
+			Car car = filteredCars.get(i);
+			if (car.arr[settings.xAxisAttribute] != null && car.arr[settings.yAxisAttribute] != null) {
+				double xValue = (double) car.arr[settings.xAxisAttribute];
+				double yValue = (double) car.arr[settings.yAxisAttribute];
+				double x = PADDING + xAxis.scale * xValue - xAxis.scale * xAxis.start;
+				double y = canvas.getHeight() - PADDING - yValue * yAxis.scale + yAxis.scale * yAxis.start;
+				if (r.contains(x - settings.x, y + settings.y)) {
+					settings.selectedCars.add(car);
+				}
+			}
+		}
+	}
+	
+	private Rectangle getAdjustedRect(PlotSettings settings) {
+		double rY = settings.selectRectangle.getY();
+		double rX = settings.selectRectangle.getX();
+		double width = settings.selectRectangle.getWidth();
+		double height = settings.selectRectangle.getHeight();
+		if (width < 0) {
+			rX += width;
+			width *= -1;
+		}
+		if (height < 0) {
+			rY += height;
+			height *= -1;
+		}
+		return new Rectangle(rX, rY, width, height);
 	}
 	
 	private void drawLegend(Canvas canvas, GraphicsContext g, PlotSettings settings) {

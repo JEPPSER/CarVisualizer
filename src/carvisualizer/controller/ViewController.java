@@ -27,12 +27,14 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TitledPane;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 public class ViewController implements CarVisualizerController {
@@ -77,6 +79,7 @@ public class ViewController implements CarVisualizerController {
 	private double prevY;
 	private boolean isDragging = false;
 	private boolean isMouseDown = false;
+	private boolean isSelecting = false;
 	private final int PADDING = 60;
 
 	@FXML
@@ -336,8 +339,18 @@ public class ViewController implements CarVisualizerController {
 				isMouseDown = true;
 			} else {
 				isDragging = true;
-				settings.x += prevX - e.getX() / settings.scale;
-				settings.y -= prevY - e.getY() / settings.scale;
+				if (e.getButton() == MouseButton.SECONDARY) {
+					if (!isSelecting) {
+						isSelecting = true;
+						settings.selectRectangle = new Rectangle(e.getX() / settings.scale, e.getY() / settings.scale, 0, 0);
+					} else {
+						settings.selectRectangle.setWidth(e.getX() / settings.scale - settings.selectRectangle.getX());
+						settings.selectRectangle.setHeight(e.getY() / settings.scale - settings.selectRectangle.getY());
+					}
+				} else {
+					settings.x += prevX - e.getX() / settings.scale;
+					settings.y -= prevY - e.getY() / settings.scale;
+				}
 			}
 			if (!settings.fishEyePlaced) {
 				settings.fishEyeX = e.getX();
@@ -378,6 +391,8 @@ public class ViewController implements CarVisualizerController {
 				settings.pointClicked = true;
 			}
 			isDragging = false;
+			isSelecting = false;
+			settings.selectRectangle = null;
 			draw();
 		});
 		

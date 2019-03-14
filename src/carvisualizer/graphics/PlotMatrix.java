@@ -45,6 +45,9 @@ public class PlotMatrix {
 				double y = ((double) cars.get(i).arr[settings.matrixAttributes[yAxisIndex]] - yAxis.min) * yScale;
 				y = plotY + height - y;
 				g.setFill(cars.get(i).shapeColor);
+				if (settings.selectedCars.contains(cars.get(i))) {
+					g.setFill(Color.BLUE);
+				}
 				g.fillOval(x - 2, y - 2, 4, 4);
 				g.setFill(Color.BLACK);
 			}
