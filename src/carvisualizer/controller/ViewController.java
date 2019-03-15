@@ -94,10 +94,10 @@ public class ViewController implements CarVisualizerController {
 		settings = new PlotSettings();
 		settings.xAxisAttribute = 21;
 		settings.yAxisAttribute = 25;
-		plot = new ScatterPlot(cars);
-		matrix = new PlotMatrix(cars);
 		g = canvas.getGraphicsContext2D();
 		gMatrix = matrixCanvas.getGraphicsContext2D();
+		plot = new ScatterPlot(cars);
+		matrix = new PlotMatrix(cars, matrixCanvas, gMatrix, settings);
 		initFilters();
 		initLens();
 		initAxesMenus();
@@ -432,13 +432,19 @@ public class ViewController implements CarVisualizerController {
 			}
 			draw();
 		});
+		
+		matrixCanvas.setOnMouseClicked(e -> {
+			settings.xAxisAttribute = matrix.getXAttribute(e.getX());
+			settings.yAxisAttribute = matrix.getYAttribute(e.getY());
+			draw();
+		});
 	}
 
 	private void draw() {
 		g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 		gMatrix.clearRect(0, 0, matrixCanvas.getWidth(), matrixCanvas.getHeight());
 		plot.draw(canvas, g, settings);
-		matrix.draw(matrixCanvas, gMatrix, settings);
+		matrix.draw();
 	}
 
 	private ArrayList<Car> readCSVFile(File file) {

@@ -11,13 +11,19 @@ import javafx.scene.paint.Color;
 public class PlotMatrix {
 
 	private ArrayList<Car> cars;
+	private Canvas canvas;
+	private GraphicsContext g;
+	private PlotSettings settings;
 	
-	public PlotMatrix(ArrayList<Car> cars) {
+	public PlotMatrix(ArrayList<Car> cars, Canvas canvas, GraphicsContext g, PlotSettings settings) {
 		this.cars = cars;
+		this.canvas = canvas;
+		this.g = g;
+		this.settings = settings;
 	}
 	
-	public void draw(Canvas canvas, GraphicsContext g, PlotSettings settings) {
-		ArrayList<Car> filteredCars = filterCars(settings);
+	public void draw() {
+		ArrayList<Car> filteredCars = filterCars();
 		double plotWidth = canvas.getWidth() / 4;
 		double plotHeight = canvas.getHeight() / 4;
 		for (int i = 0; i < 4; i++) {
@@ -26,15 +32,41 @@ public class PlotMatrix {
 				double y = i * plotHeight;
 				g.strokeRect(x, y, plotWidth, plotHeight);
 				if (j == i) {
-					g.fillText(Car.NAMES[settings.matrixAttributes[i]], x + 5, y + plotHeight / 2);
+					g.fillText(Car.NAMES[settings.matrixAttributes[i]], x + 10, y + plotHeight / 2);
 				} else {
-					drawPlot(x, y, plotWidth, plotHeight, g, settings, j, i, filteredCars);
+					drawPlot(x, y, plotWidth, plotHeight, j, i, filteredCars);
 				}
 			}
 		}
 	}
 	
-	private void drawPlot(double plotX, double plotY, double width, double height, GraphicsContext g, PlotSettings settings, int xAxisIndex, int yAxisIndex, ArrayList<Car> cars) {
+	public int getXAttribute(double val) {
+		double plotWidth = canvas.getWidth() / 4;
+		for (int i = 0; i < 4; i++) {
+			for (int j = i; j < 4; j++) {
+				double x = j * plotWidth;
+				if (val >= x && val <= x + plotWidth) {
+					return settings.matrixAttributes[j];
+				}
+			}
+		}
+		return settings.xAxisAttribute;
+	}
+	
+	public int getYAttribute(double val) {
+		double plotHeight = canvas.getHeight() / 4;
+		for (int i = 0; i < 4; i++) {
+			for (int j = i; j < 4; j++) {
+				double y = i * plotHeight;
+				if (val >= y && val <= y + plotHeight) {
+					return settings.matrixAttributes[i];
+				}
+			}
+		}
+		return settings.yAxisAttribute;
+	}
+	
+	private void drawPlot(double plotX, double plotY, double width, double height, int xAxisIndex, int yAxisIndex, ArrayList<Car> cars) {
 		Axis xAxis = new Axis(cars, width, Orientation.HORIZONTAL, settings.matrixAttributes[xAxisIndex]);
 		Axis yAxis = new Axis(cars, height, Orientation.VERTICAL, settings.matrixAttributes[yAxisIndex]);
 		double xScale = width / (xAxis.max - xAxis.min);
@@ -54,7 +86,7 @@ public class PlotMatrix {
 		}
 	}
 	
-	private ArrayList<Car> filterCars(PlotSettings settings) {
+	private ArrayList<Car> filterCars() {
 		ArrayList<Car> result = new ArrayList<Car>(cars);
 		for (int i = 0; i < 26; i++) {
 			if (settings.ranges.containsKey(i)) { // Ranges
