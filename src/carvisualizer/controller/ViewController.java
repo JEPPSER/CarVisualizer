@@ -164,32 +164,32 @@ public class ViewController implements CarVisualizerController {
 	}
 	
 	private void initFilters() {
-		initCategoryFilter("Make", 2);
-		initCategoryFilter("Fuel type", 3);
-		initCategoryFilter("Aspiration", 4);
-		initCategoryFilter("Number of doors", 5);
-		initCategoryFilter("Body style", 6);
-		initCategoryFilter("Drive wheels", 7);
-		initCategoryFilter("Engine location", 8);
-		initCategoryFilter("Engine type", 14);
-		initCategoryFilter("Number of cylinders", 15);
-		initCategoryFilter("Fuel system", 17);
+		initRangeFilter("Price", 25);
+		initRangeFilter("Horsepower", 21);
 		initRangeFilter("Risk factor", 0);
-		initRangeFilter("Normalized losses", 1);
+		initRangeFilter("City mpg", 23);
+		initRangeFilter("Highway mpg", 24);
 		initRangeFilter("Wheel base", 9);
 		initRangeFilter("Length", 10);
 		initRangeFilter("Width", 11);
 		initRangeFilter("Height", 12);
 		initRangeFilter("Curb weight", 13);
+		initCategoryFilter("Make", 2);
+		initCategoryFilter("Fuel type", 3);
+		initCategoryFilter("Body style", 6);
+		initCategoryFilter("Drive wheels", 7);
+		initCategoryFilter("Aspiration", 4);
+		initCategoryFilter("Number of doors", 5);
+		initCategoryFilter("Engine location", 8);
+		initCategoryFilter("Engine type", 14);
+		initCategoryFilter("Number of cylinders", 15);
+		initCategoryFilter("Fuel system", 17);
+		initRangeFilter("Normalized losses", 1);
 		initRangeFilter("Engine size", 16);
 		initRangeFilter("Bore", 18);
 		initRangeFilter("Stroke", 19);
-		initRangeFilter("Compression ratio", 20);
-		initRangeFilter("Horsepower", 21);
+		initRangeFilter("Compression ratio", 20);		
 		initRangeFilter("Peak rpm", 22);
-		initRangeFilter("City mpg", 23);
-		initRangeFilter("Highway mpg", 24);
-		initRangeFilter("Price", 25);
 	}
 	
 	private void initCategoryFilter(String text, int attribute) {

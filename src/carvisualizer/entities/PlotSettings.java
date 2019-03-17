@@ -29,7 +29,7 @@ public class PlotSettings {
 	public Car selectedCar;
 	public Rectangle selectRectangle;
 	public ArrayList<Car> selectedCars = new ArrayList<Car>();
-	public int[] matrixAttributes = { 25, 21, 13, 22 };
+	public int[] matrixAttributes = { 25, 21, 13, 24 };
 	
 	public Map<Integer, Range> ranges = new HashMap<>();
 	public Map<Integer, CategorySet> categories = new HashMap<>();
